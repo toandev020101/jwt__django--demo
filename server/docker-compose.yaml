@@ -6,6 +6,6 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=123456
-      - POSTGRES_DB=eng_quizz
+      - POSTGRES_DB=jwt_django
     ports:
       - '5432:5432'
