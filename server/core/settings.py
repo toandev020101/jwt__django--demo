@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'jwt_django.apps.JwtDjangoConfig'
+    'jwt_django.apps.JwtDjangoConfig',
+    'rest_framework'
 ]
 
 MIDDLEWARE = [
@@ -91,6 +92,8 @@ DATABASES = {
     }
 }
 
+AUTH_USER_MODEL = 'jwt_django.User'
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -133,3 +136,11 @@ MEDIA_ROOT = '%s/static/' % BASE_DIR
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+EMAIL_HOST = env('EMAIL_HOST')
+EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+EMAIL_PORT = env('EMAIL_PORT')
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
+EMAIL_USE_TLS = env('EMAIL_USE_TLS')
