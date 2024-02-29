@@ -6,12 +6,13 @@ from .models import User
 
 
 class RegisterSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(max_length=255, min_length=6)
     password = serializers.CharField(max_length=68, min_length=6, write_only=True)
     confirm_password = serializers.CharField(max_length=68, min_length=6, write_only=True)
 
     class Meta:
         model = User
-        fields = ['last_name', 'first_name', 'email', 'password', 'confirm_password']
+        fields = ['email', 'password', 'confirm_password', 'last_name', 'first_name']
 
     def validate(self, attrs):
         email = attrs.get('email')
