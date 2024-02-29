@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager
 from django.utils.translation import gettext_lazy as _
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from .managers import UserManager
 
@@ -36,7 +37,11 @@ class User(AbstractBaseUser, PermissionsMixin):
         return f"{self.last_name} {self.first_name}"
 
     def tokens(self):
-        pass
+        refresh = RefreshToken.for_user(self)
+        return {
+            'access_token': str(refresh.access_token),
+            'refresh_token': str(refresh)
+        }
 
 
 class OTP(models.Model):
