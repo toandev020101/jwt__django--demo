@@ -16,9 +16,9 @@ def register(request):
         serializer.save()
         user = serializer.data
         send_code_to_email(user['email'])
-        return Response({'data': user, 'message': f'Xin chào, {user["first_name"]}'}, status=status.HTTP_201_CREATED)
+        return Response({'data': None, 'message': 'Đăng ký thành công'}, status=status.HTTP_201_CREATED)
 
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    return Response({'errors': serializer.errors, 'message': 'Đăng ký thất bại!'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST'])
@@ -41,5 +41,5 @@ def verify_email(request):
 def login(request):
     serializer = LoginSerializer(data=request.data, context={'request': request})
     serializer.is_valid(raise_exception=True)
-    return Response(serializer.data, status=status.HTTP_200_OK)
+    return Response({'data': serializer.data, 'message': 'Đăng nhập thành công'}, status=status.HTTP_200_OK)
 
