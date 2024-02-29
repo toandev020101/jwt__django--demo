@@ -4,6 +4,7 @@ from rest_framework import status
 
 from .serializers import RegisterSerializer
 from .utils import send_code_to_email
+from .models import OTP
 
 
 # Create your views here.
@@ -18,3 +19,19 @@ def register(request):
         return Response({'data': user, 'message': f'Xin chào, {user["first_name"]}'}, status=status.HTTP_201_CREATED)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+def verify_email(request):
+    code = request.data.get('otp')
+    try:
+        otp = OTP.objects.get(code=code)
+        user = otp.user
+        if not user.is_verified:
+            user.is_verified = True
+            user.save()
+            return Response({'message': 'Xác minh email thành công'}, status=status.HTTP_200_OK)
+
+        return Response({'message': 'Mã không hợp lệ người dùng đã xác minh!'}, status=status.HTTP_204_NO_CONTENT)
+    except OTP.DoesNotExist:
+        return Response({'message': 'Mã không được cung cấp!'}, status=status.HTTP_404_NOT_FOUND)
