@@ -2,7 +2,7 @@ from django.contrib.auth import authenticate
 from rest_framework import serializers
 from rest_framework.exceptions import AuthenticationFailed
 
-from .models import User
+from .models import User, OTP
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -33,7 +33,41 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
 
-class LoginSerializer(serializers.Serializer):
+class VerifyEmailSerializer(serializers.ModelSerializer):
+    code = serializers.CharField(max_length=6, write_only=True)
+    email = serializers.EmailField(max_length=255, min_length=6, read_only=True)
+    full_name = serializers.CharField(max_length=255, read_only=True)
+    access_token = serializers.CharField(max_length=255, read_only=True)
+    refresh_token = serializers.CharField(max_length=255, read_only=True)
+
+    class Meta:
+        model = OTP
+        fields = ['code', 'email', 'full_name', 'access_token', 'refresh_token']
+
+    def validate(self, attrs):
+        code = attrs.get('code')
+        try:
+            otp = OTP.objects.get(code=code)
+            user = otp.user
+            if user.is_verified:
+                raise serializers.ValidationError({'code': 'Mã không hợp lệ người dùng đã xác minh!'})
+
+            user.is_verified = True
+            user.save()
+
+            tokens = user.tokens()
+
+            return {
+                'email': user.email,
+                'full_name': user.get_full_name,
+                'access_token': str(tokens.get('access_token')),
+                'refresh_token': str(tokens.get('refresh_token'))
+            }
+        except OTP.DoesNotExist:
+            raise serializers.ValidationError({'code': 'Mã không được cung cấp!'})
+
+
+class LoginSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(max_length=255, min_length=6)
     password = serializers.CharField(max_length=68, write_only=True)
     full_name = serializers.CharField(max_length=255, read_only=True)
