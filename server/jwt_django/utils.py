@@ -12,6 +12,7 @@ def generate_otp():
 
     return otp
 
+
 def send_code_to_email(email):
     subject = "Mã xác minh email của JWT_Django"
     code = generate_otp()
@@ -24,3 +25,19 @@ def send_code_to_email(email):
     send_email = EmailMessage(subject=subject, body=email_body, from_email=from_email, to=[email])
     send_email.send(fail_silently=True)
 
+
+def send_mail(data, type):
+    fail_silently = False
+
+    if type == "code":
+        fail_silently = True
+
+    if type == "normal":
+        fail_silently = False
+
+    handle_send = EmailMessage(
+        subject=data['subject'], body=data['body'], from_email=settings.DEFAULT_FROM_EMAIL,
+        to=[data['to']]
+    )
+    handle_send.content_subtype = "html"
+    handle_send.send(fail_silently=fail_silently)
