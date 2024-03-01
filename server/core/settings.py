@@ -83,9 +83,11 @@ WSGI_APPLICATION = 'core.wsgi.application'
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
+    "http://192.168.221.106:3000"
 ]
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
+    "http://192.168.221.106:3000"
 ]
 
 # Database
@@ -162,3 +164,5 @@ DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
 EMAIL_USE_TLS = env('EMAIL_USE_TLS')
 
 CLIENT_URL = env('CLIENT_URL')
+BASE_API_URL = env('BASE_API_URL')
+REFRESH_TOKEN_COOKIE_NAME = env('REFRESH_TOKEN_COOKIE_NAME')

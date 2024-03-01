@@ -47,7 +47,18 @@ def register(request):
 def verify_email(request):
     serializer = VerifyEmailSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
-    return Response({'data': serializer.data, 'message': 'Xác minh email thành công'}, status=status.HTTP_200_OK)
+
+    data = serializer.data
+    response = Response({'data': data, 'message': 'Xác minh email thành công'}, status=status.HTTP_200_OK)
+    response.set_cookie(
+        key=settings.REFRESH_TOKEN_COOKIE_NAME,
+        value=data.get('refresh_token'),
+        httponly=True,
+        secure=True,
+        samesite="lax",
+        path=f"{settings.BASE_URL}/auth/refresh-token"
+    )
+    return response
 
 
 @api_view(['POST'])
@@ -55,7 +66,18 @@ def verify_email(request):
 def login(request):
     serializer = LoginSerializer(data=request.data, context={'request': request})
     serializer.is_valid(raise_exception=True)
-    return Response({'data': serializer.data, 'message': 'Đăng nhập thành công'}, status=status.HTTP_200_OK)
+    data = serializer.data
+
+    response = Response({'data': serializer.data, 'message': 'Đăng nhập thành công'}, status=status.HTTP_200_OK)
+    response.set_cookie(
+        key=settings.REFRESH_TOKEN_COOKIE_NAME,
+        value=data.get('refresh_token'),
+        httponly=True,
+        secure=True,
+        samesite="lax",
+        path=f"{settings.BASE_API_URL}/auth/refresh-token"
+    )
+    return response
 
 
 @api_view(['POST'])
@@ -82,7 +104,18 @@ def reset_password_confirm(request, uidb64, token):
 def set_new_password(request):
     serializer = SetNewPasswordSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
-    return Response({'data': serializer.data, 'message': 'Đặt lại mật khẩu thành công'}, status=status.HTTP_200_OK)
+    data = serializer.data
+
+    response = Response({'data': serializer.data, 'message': 'Đặt lại mật khẩu thành công'}, status=status.HTTP_200_OK)
+    response.set_cookie(
+        key=settings.REFRESH_TOKEN_COOKIE_NAME,
+        value=data.get('refresh_token'),
+        httponly=True,
+        secure=True,
+        samesite="lax",
+        path=f"{settings.BASE_API_URL}/auth/refresh-token"
+    )
+    return response
 
 
 @api_view(['POST'])

@@ -22,9 +22,9 @@ export const verifyEmail = (data) => {
   return axiosClient.post(url, data);
 };
 
-export const refreshToken = () => {
+export const refreshToken = (data) => {
   const url = `${BASE_LINK}/refresh-token`;
-  return axiosClient.get(url);
+  return axiosClient.post(url, data);
 };
 
 export const sendOTPPassword = (data) => {

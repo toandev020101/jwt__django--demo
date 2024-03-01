@@ -3,6 +3,7 @@ import * as AuthApi from '../apis/authApi';
 
 const JWTManager = () => {
   const LOGOUT_EVENT_NAME = 'jwt_django_logout';
+  const REFRESH_TOKEN_COOKIE_NAME = 'jwt_django_cookie';
   let inMemoryToken = null;
   let refreshTokenTimeoutId = null;
   let userId = null;
@@ -44,8 +45,9 @@ const JWTManager = () => {
   const getRefreshToken = async () => {
     try {
       // call api refresh token
-      const res = await AuthApi.refreshToken();
-      setToken(res.result.access_token);
+      const refresh_token = window.getCookie(REFRESH_TOKEN_COOKIE_NAME);
+      const res = await AuthApi.refreshToken(refresh_token);
+      setToken(res.data.access);
       return true;
     } catch (error) {
       deleteToken();
