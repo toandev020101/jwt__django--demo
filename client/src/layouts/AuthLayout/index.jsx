@@ -15,8 +15,9 @@ const AuthLayout = ({ children }) => {
   useEffect(() => {
     const getUser = async () => {
       const res = await UserApi.getOneById(JWTManager.getUserId());
-      const user = res.result.data;
-      navigate(user.role.code === 'student' ? '/' : '/quan-tri');
+      const user = res.data;
+      // navigate(user.role.code === 'student' ? '/' : '/quan-tri');
+      navigate('/');
     };
 
     if (isAuthenticated) {

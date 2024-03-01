@@ -1,5 +1,5 @@
 <div
-        style="
+  style="
         max-width: 600px;
         margin: 0 auto;
         background-color: #fff;
@@ -8,17 +8,37 @@
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
       "
 >
-    <h1 style="color: #2196f3; text-align: center">JWT Django</h1>
-    <h3 style="color: #333; text-align: center">Đặt lại mật khẩu</h3>
-    <p style="color: #555; line-height: 25px">
-        Xin chào {{fullname}}, <br/>
-        Để xác minh email của bạn, vui lòng nhập mã OTP sau:
-    </p>
-    <p style="color: #555; line-height: 25px; font-weight: bold; text-align: center; font-size: 18px;">
-        {{code}}
-    </p>
-    <div
-            style="
+  <h1 style="color: #2196f3; text-align: center">JWT Django</h1>
+  <h3 style="color: #333; text-align: center">Đặt lại mật khẩu</h3>
+  <p style="color: #555; line-height: 25px">
+    Xin chào {{fullname}}, <br />
+    Để xác minh email của bạn, vui lòng nhập mã OTP sau:
+  </p>
+  <p style="color: #555; line-height: 25px; font-weight: bold; text-align: center; font-size: 18px;">
+    {{code}}
+  </p>
+
+  <p style="color: #555; line-height: 25px;">
+    Bấm vào liên kết bên dưới để nhập OTP:
+  </p>
+  <a
+    href="{{client_url}}/xac-minh-email"
+    style="
+          background-color: #2196f3;
+          text-decoration: none;
+          color: #fff;
+          line-height: 40px;
+          width: 200px;
+          display: block;
+          text-align: center;
+          border-radius: 5px;
+          font-size: 16px;
+          margin: 30px auto;
+        "
+  >Xác minh email</a
+  >
+  <div
+    style="
           border-top: 1px solid #e0e0e0;
           margin-top: 50px;
           padding: 20px 40px;
@@ -26,7 +46,7 @@
           font-size: 14px;
           color: #777;
         "
-    >
-        Copyright &copy; 2024 - Đức Toàn
-    </div>
+  >
+    Copyright &copy; 2024 - Đức Toàn
+  </div>
 </div>

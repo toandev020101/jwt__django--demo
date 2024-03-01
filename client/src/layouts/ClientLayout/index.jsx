@@ -1,13 +1,11 @@
 import { Box } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import OTPDialog from '../../components/OTPDialog';
 import { useAuthContext } from '../../contexts/authContext';
 import JWTManager from '../../utils/jwt';
 import * as UserApi from '../../apis/userApi';
 
 const ClientLayout = ({ children }) => {
-  const location = useLocation();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuthContext();
 
@@ -32,10 +30,7 @@ const ClientLayout = ({ children }) => {
   }, [navigate, isAuthenticated]);
 
   return (
-    <Box>
-      {location.hash === '#otp' && isAuthenticated && user && !user.is_verified ? <OTPDialog /> : null}
-      <Box>{children}</Box>
-    </Box>
+    <Box>{children}</Box>
   );
 };
 

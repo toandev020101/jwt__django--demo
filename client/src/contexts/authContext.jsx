@@ -5,15 +5,18 @@ const defaultIsAuthenticated = false;
 
 export const AuthContext = createContext({
   isAuthenticated: defaultIsAuthenticated,
-  setIsAuthenticated: () => {},
+  setIsAuthenticated: () => {
+  },
   checkAuth: () => Promise.resolve(),
-  logoutClient: () => {}
+  logoutClient: () => {
+  },
 });
 
 export const useAuthContext = () => useContext(AuthContext);
 
 const AuthContextProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(defaultIsAuthenticated);
+  const [isRegister, setIsRegister] = useState(defaultIsAuthenticated);
 
   const checkAuth = useCallback(async () => {
     const token = JWTManager.getToken();
@@ -23,7 +26,7 @@ const AuthContextProvider = ({ children }) => {
       const success = await JWTManager.getRefreshToken();
       if (success) setIsAuthenticated(true);
     }
-  }, [])
+  }, []);
 
   const logoutClient = () => {
     JWTManager.deleteToken();

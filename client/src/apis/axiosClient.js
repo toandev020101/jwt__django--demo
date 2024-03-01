@@ -2,7 +2,7 @@ import axios from 'axios';
 import JWTManager from '../utils/jwt';
 
 const axiosClient = axios.create({
-  baseURL: 'http://localhost:4000/v1/api',
+  baseURL: 'http://localhost:8000/api/v1',
   headers: {
     'content-type': 'application/json',
   },

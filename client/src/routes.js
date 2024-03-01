@@ -8,11 +8,13 @@ import Dashboard from './pages/admin/Dashboard';
 import AdminLayout from './layouts/AdminLayout';
 import RoleManager from './pages/admin/UserManager/RoleManager';
 import AccountManager from './pages/admin/UserManager/AccountManager';
+import VerifyEmail from './pages/VerifyEmail';
 
 export const publicRoutes = [
   // auth
   { path: '/dang-nhap', component: Login, layout: AuthLayout },
   { path: '/dang-ky', component: Register, layout: AuthLayout },
+  { path: '/xac-minh-email', component: VerifyEmail, layout: AuthLayout },
   { path: '/quen-mat-khau', component: ForgotPassword, layout: AuthLayout },
 
   // web

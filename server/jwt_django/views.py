@@ -1,5 +1,6 @@
+from django.conf import settings
 from django.template.loader import render_to_string
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
@@ -12,6 +13,7 @@ from .utils import send_mail, generate_otp
 
 # Create your views here.
 @api_view(['POST'])
+@authentication_classes([])
 def register(request):
     serializer = RegisterSerializer(data=request.data)
 
@@ -22,10 +24,10 @@ def register(request):
         code = generate_otp()
         OTP.objects.create(code=code, user=user)
 
-        current_site = "http://localhost:3000"
+        client_url = settings.CLIENT_URL
         email_body = render_to_string('mail_verify.html', {
             "fullname": user.get_full_name,
-            'current_site': current_site,
+            'client_url': client_url,
             'code': code
         })
         email_data = {
@@ -41,6 +43,7 @@ def register(request):
 
 
 @api_view(['POST'])
+@authentication_classes([])
 def verify_email(request):
     serializer = VerifyEmailSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)

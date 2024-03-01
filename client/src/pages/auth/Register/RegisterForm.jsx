@@ -6,48 +6,38 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import InputField from '../../../components/InputField';
 import { useNavigate } from 'react-router-dom';
 import * as AuthApi from '../../../apis/authApi';
-import JWTManager from '../../../utils/jwt';
 import { toast } from 'react-toastify';
 import { useAuthContext } from '../../../contexts/authContext';
 import registerSchema from '../../../schemas/registerSchema';
-import RadioGroupField from '../../../components/RadioGroupField';
+
+const VERIFY_EMAIL = 'verify_email';
 
 const RegisterForm = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const { setIsAuthenticated } = useAuthContext();
 
   const form = useForm({
     defaultValues: {
-      fullname: '',
-      gender: 'nam',
-      birth_day: '1990-01-01',
+      last_name: '',
+      first_name: '',
       email: '',
       password: '',
-      confirmPassword: '',
+      confirm_password: '',
     },
     resolver: yupResolver(registerSchema),
   });
 
   const handleSubmit = async (values) => {
-    // Extract the date components
-    const year = values.birth_day.getFullYear();
-    const month = String(values.birth_day.getMonth() + 1).padStart(2, '0');
-    const day = String(values.birth_day.getDate()).padStart(2, '0');
-    values.birth_day = `${year}-${month}-${day}`;
     setIsLoading(true);
     try {
-      let res = await AuthApi.register(values);
-      const user = res.result.data;
-      JWTManager.setToken(res.result.access_token);
-      setIsAuthenticated(true);
-
-      navigate(user.role.code === 'student' ? '/#otp' : '/quan-tri',
+      await AuthApi.register(values);
+      window.localStorage.setItem(VERIFY_EMAIL, 'true');
+      navigate('/xac-minh-email',
         {
           state: {
             notify: {
               type: 'success',
-              message: 'Xin chào, ' + user.fullname,
+              message: 'Cảm ơn bạn đã đăng ký, Vui lòng xác minh email',
               options: { theme: 'colored', toastId: 'headerId', autoClose: 1500 },
             },
           },
@@ -58,7 +48,9 @@ const RegisterForm = () => {
       const { status, data } = error.response;
       if (status === 400 || status === 404) {
         if (status === 400) {
-          form.setError('email', { type: 'manual', message: data.detail });
+          Object.keys(data).forEach(key => {
+            form.setError(key, { type: 'manual', message: data[key][0] });
+          });
         }
         toast.error('Đăng ký thất bại!', { theme: 'colored', toastId: 'authId', autoClose: 1500 });
       } else {
@@ -70,14 +62,13 @@ const RegisterForm = () => {
 
   return (
     <Box component={'form'} onSubmit={form.handleSubmit(handleSubmit)}>
-      <InputField name="fullname" label="Họ và tên" form={form} type="text" required />
-      <RadioGroupField name="gender" label="Giới tính" form={form} required
-                       options={[{ label: 'Nam', value: 'nam' }, { label: 'Nữ', value: 'nữ' }]}
-                       type="horizontal" />
-      <InputField name="birth_day" label="Ngày sinh" form={form} type="date" required />
+      <Box display={'flex'} justifyContent={'space-between'} gap={'10px'}>
+        <InputField name="last_name" label="Họ" form={form} type="text" required />
+        <InputField name="first_name" label="Tên" form={form} type="text" required />
+      </Box>
       <InputField name="email" label="Email" form={form} type="email" required />
       <InputField name="password" label="Mật khẩu" form={form} type="password" required />
-      <InputField name="confirmPassword" label="Xác nhận mật khẩu" form={form} type="password" required />
+      <InputField name="confirm_password" label="Xác nhận mật khẩu" form={form} type="password" required />
       <LoadingButton
         variant="contained"
         loading={isLoading}
