@@ -1,10 +1,12 @@
+from django.template.loader import render_to_string
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 
+from .models import User, OTP
 from .serializers import RegisterSerializer, LoginSerializer, VerifyEmailSerializer, ResetPasswordSerializer, \
     ResetPasswordConfirmSerializer, SetNewPasswordSerializer
-from .utils import send_code_to_email
+from .utils import send_mail, generate_otp
 
 
 # Create your views here.
@@ -14,8 +16,24 @@ def register(request):
 
     if serializer.is_valid(raise_exception=True):
         serializer.save()
-        user = serializer.data
-        send_code_to_email(user['email'])
+        user_data = serializer.data
+        user = User.objects.get(email=user_data["email"])
+        code = generate_otp()
+        OTP.objects.create(code=code, user=user)
+
+        current_site = "http://localhost:3000"
+        email_body = render_to_string('mail_verify.html', {
+            "fullname": user.get_full_name,
+            'current_site': current_site,
+            'code': code
+        })
+        email_data = {
+            'subject': 'Mã xác minh email của JWT_Django',
+            'body': email_body,
+            'to': user.email
+        }
+        send_mail(data=email_data, type="code")
+
         return Response({'data': None, 'message': 'Đăng ký thành công'}, status=status.HTTP_201_CREATED)
 
     return Response({'errors': serializer.errors, 'message': 'Đăng ký thất bại!'}, status=status.HTTP_400_BAD_REQUEST)
