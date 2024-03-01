@@ -18,11 +18,11 @@ const Register = () => {
       width={'430px'}
       zIndex={99}
     >
-      <TitlePage title="EngQuizz - Đăng ký" />
+      <TitlePage title="JWT Django - Đăng ký" />
       <Box display={'flex'} justifyContent={'center'} alignItems={'center'} gap={'10px'} marginBottom={'20px'}>
         <HiPuzzle fontSize={45} style={{ color: theme.palette.primary.main, marginTop: '-15px' }} />
         <Typography variant="h5" sx={{ fontWeight: 600, textTransform: 'uppercase', color: theme.palette.grey[700] }}>
-          EngQuizz
+          JWT Django
         </Typography>
       </Box>
 

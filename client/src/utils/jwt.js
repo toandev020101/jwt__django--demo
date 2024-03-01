@@ -2,7 +2,7 @@ import { jwtDecode } from 'jwt-decode';
 import * as AuthApi from '../apis/authApi';
 
 const JWTManager = () => {
-  const LOGOUT_EVENT_NAME = 'license_logout';
+  const LOGOUT_EVENT_NAME = 'jwt_django_logout';
   let inMemoryToken = null;
   let refreshTokenTimeoutId = null;
   let userId = null;
