@@ -1,7 +1,14 @@
 from django.contrib.auth import authenticate
+from django.template.loader import render_to_string
+from django.urls import reverse
 from rest_framework import serializers
 from rest_framework.exceptions import AuthenticationFailed
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.contrib.sites.shortcuts import get_current_site
+from django.utils.encoding import smart_bytes, force_str, DjangoUnicodeDecodeError
 
+from .utils import send_mail
 from .models import User, OTP
 
 
@@ -85,7 +92,8 @@ class LoginSerializer(serializers.ModelSerializer):
         user = authenticate(request, email=email, password=password)
 
         if not user:
-            raise AuthenticationFailed({'email': 'Email hoặc mật khẩu không chính xác!', 'password': 'Email hoặc mật khẩu không chính xác!'})
+            raise AuthenticationFailed(
+                {'email': 'Email hoặc mật khẩu không chính xác!', 'password': 'Email hoặc mật khẩu không chính xác!'})
         if not user.is_verified:
             raise AuthenticationFailed({'email': 'Email chưa được xác minh!'})
 
@@ -97,3 +105,113 @@ class LoginSerializer(serializers.ModelSerializer):
             'access_token': str(tokens.get('access_token')),
             'refresh_token': str(tokens.get('refresh_token'))
         }
+
+
+class ResetPasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField(max_length=255)
+
+    class Meta:
+        fields = ['email']
+
+    def validate(self, attrs):
+        email = attrs.get('email')
+        user_exists = User.objects.filter(email=email).exists()
+        if not user_exists:
+            raise serializers.ValidationError({'email': 'Không tìm thấy tài khoản phù hợp!'})
+
+        user = User.objects.get(email=email)
+
+        uidb64 = urlsafe_base64_encode(smart_bytes(user.id))
+        token = PasswordResetTokenGenerator().make_token(user)
+        request = self.context.get('request')
+        site_domain = get_current_site(request).domain
+        relative_link = reverse(viewname="reset-password-confirm", kwargs={'uidb64': uidb64, 'token': token})
+        abslink = f"http://{site_domain}{relative_link}"
+        email_body = render_to_string('mail_reset_password.html', {
+            "fullname": user.get_full_name,
+            "abslink": abslink
+        })
+        email_data = {
+            'subject': 'Lấy lại mật khẩu của bạn',
+            'body': email_body,
+            'to': user.email
+        }
+        send_mail(data=email_data, type="normal")
+
+        return attrs
+
+
+class ResetPasswordConfirmSerializer(serializers.Serializer):
+    uidb64 = serializers.CharField()
+    token = serializers.CharField()
+
+    class Meta:
+        fields = ['uidb64', 'token']
+
+    def validate(self, attrs):
+        uidb64 = attrs.get('uidb64')
+        token = attrs.get('token')
+
+        try:
+            user_id = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(id=user_id)
+            if not PasswordResetTokenGenerator().check_token(user, token):
+                raise AuthenticationFailed("Token không hợp lệ hoặc đã hết hạn!", 401)
+
+            return {
+                'uidb64': uidb64,
+                'token': token
+            }
+
+        except DjangoUnicodeDecodeError:
+            raise AuthenticationFailed("Token không hợp lệ hoặc đã hết hạn!", 401)
+
+
+class SetNewPasswordSerializer(serializers.Serializer):
+    new_password = serializers.CharField(max_length=100, min_length=6, write_only=True)
+    new_password_confirm = serializers.CharField(max_length=100, min_length=6, write_only=True)
+    uidb64 = serializers.CharField(write_only=True)
+    token = serializers.CharField(write_only=True)
+
+    email = serializers.EmailField(max_length=255, min_length=6, read_only=True)
+    full_name = serializers.CharField(max_length=255, read_only=True)
+    access_token = serializers.CharField(max_length=255, read_only=True)
+    refresh_token = serializers.CharField(max_length=255, read_only=True)
+
+    class Meta:
+        fields = ['new_password', 'new_password_confirm', 'uidb64', 'token', 'email', 'full_name', 'access_token',
+                  'refresh_token']
+
+    def validate(self, attrs):
+        new_password = attrs.get('new_password')
+        new_password_confirm = attrs.get('new_password_confirm')
+        uidb64 = attrs.get('uidb64')
+        token = attrs.get('token')
+
+        try:
+            user_id = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(id=user_id)
+
+            if not PasswordResetTokenGenerator().check_token(user, token):
+                raise AuthenticationFailed("Liên kết đặt lại mật khẩu không hợp lệ hoặc đã hết hạn!", 401)
+
+            if new_password != new_password_confirm:
+                raise serializers.ValidationError({'new_password_confirm': "Mật khẩu không khớp!"})
+
+            if user.check_password(new_password):
+                raise serializers.ValidationError({'new_password': "Trùng với mật khẩu cũ!"})
+
+            user.set_password(new_password)
+            user.save()
+
+            tokens = user.tokens()
+
+            return {
+                'email': user.email,
+                'full_name': user.get_full_name,
+                'access_token': str(tokens.get('access_token')),
+                'refresh_token': str(tokens.get('refresh_token'))
+            }
+        
+        except DjangoUnicodeDecodeError:
+            raise AuthenticationFailed("Liên kết đặt lại mật khẩu không hợp lệ hoặc đã hết hạn!", 401)
