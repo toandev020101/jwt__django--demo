@@ -31,7 +31,7 @@ const VerifyEmail = () => {
           },
         });
     }
-  }, []);
+  }, [navigate]);
 
   const handleSendOTP = async () => {
     setIsLoading(true);

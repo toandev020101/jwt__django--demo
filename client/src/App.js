@@ -13,15 +13,15 @@ const App = () => {
   const { checkAuth } = useAuthContext();
   const [isLoading, setIsLoading] = useState(false);
 
-  // useEffect(() => {
-  //   const authentication = async () => {
-  //     setIsLoading(true);
-  //     await checkAuth();
-  //     setIsLoading(false);
-  //   };
-  //
-  //   authentication();
-  // }, [checkAuth]);
+  useEffect(() => {
+    const authentication = async () => {
+      setIsLoading(true);
+      await checkAuth();
+      setIsLoading(false);
+    };
+
+    authentication();
+  }, [checkAuth]);
 
   const renderRoute = (route, index) => {
     const Page = route.component;
