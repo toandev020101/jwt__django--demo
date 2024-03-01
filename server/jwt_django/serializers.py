@@ -7,6 +7,8 @@ from django.utils.encoding import smart_bytes, force_str, DjangoUnicodeDecodeErr
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from rest_framework import serializers
 from rest_framework.exceptions import AuthenticationFailed
+from rest_framework_simplejwt.exceptions import TokenError
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import User, OTP
 from .utils import send_mail
@@ -218,3 +220,22 @@ class SetNewPasswordSerializer(serializers.Serializer):
 
         except DjangoUnicodeDecodeError:
             raise AuthenticationFailed("Liên kết đặt lại mật khẩu không hợp lệ hoặc đã hết hạn!", 401)
+
+
+class LogoutSerializer(serializers.Serializer):
+    refresh_token = serializers.CharField()
+
+    default_error_message = {
+        'bad_token': ('Token không hợp lệ hoặc đã hết hạn!')
+    }
+
+    def validate(self, attrs):
+        self.token = attrs.get('refresh_token')
+        return attrs
+
+    def save(self, **kwargs):
+        try:
+            token = RefreshToken(self.token)
+            token.blacklist()
+        except TokenError:
+            return self.fail('bad_token')
