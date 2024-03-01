@@ -18,7 +18,7 @@ const Login = () => {
       width={'430px'}
       zIndex={99}
     >
-      <TitlePage title="EngQuizz - Đăng nhập" />
+      <TitlePage title="JWT Django - Đăng nhập" />
       <Box display={'flex'} justifyContent={'center'} alignItems={'center'} gap={'10px'} marginBottom={'20px'}>
         <HiPuzzle fontSize={45} style={{ color: theme.palette.primary.main, marginTop: '-15px' }} />
         <Typography variant="h5" sx={{
@@ -28,12 +28,12 @@ const Login = () => {
           textTransform: 'uppercase',
           color: theme.palette.grey[700],
         }}>
-          EngQuizz
+          JWT Django
         </Typography>
       </Box>
 
       <Typography variant="h6" sx={{ fontWeight: 600, color: theme.palette.grey[700] }}>
-        Chào mừng đến với EngQuizz! 👋🏻
+        Chào mừng đến với JWT Django! 👋🏻
       </Typography>
 
       <Typography sx={{ margin: '10px 0 20px 0', fontSize: '15px', color: theme.palette.grey[600] }}>

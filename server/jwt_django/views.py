@@ -51,6 +51,7 @@ def verify_email(request):
 
 
 @api_view(['POST'])
+@authentication_classes([])
 def login(request):
     serializer = LoginSerializer(data=request.data, context={'request': request})
     serializer.is_valid(raise_exception=True)
