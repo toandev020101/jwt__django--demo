@@ -1,15 +1,15 @@
 from django.contrib.auth import authenticate
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 from django.urls import reverse
+from django.utils.encoding import smart_bytes, force_str, DjangoUnicodeDecodeError
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from rest_framework import serializers
 from rest_framework.exceptions import AuthenticationFailed
-from django.contrib.auth.tokens import PasswordResetTokenGenerator
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.contrib.sites.shortcuts import get_current_site
-from django.utils.encoding import smart_bytes, force_str, DjangoUnicodeDecodeError
 
-from .utils import send_mail
 from .models import User, OTP
+from .utils import send_mail
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -32,6 +32,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
         if password != confirm_password:
             raise serializers.ValidationError({'confirm_password': 'Mật khẩu không khớp!'})
+
         return attrs
 
     def create(self, validated_data):
@@ -40,7 +41,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
 
-class VerifyEmailSerializer(serializers.ModelSerializer):
+class VerifyEmailSerializer(serializers.Serializer):
     code = serializers.CharField(max_length=6, write_only=True)
     email = serializers.EmailField(max_length=255, min_length=6, read_only=True)
     full_name = serializers.CharField(max_length=255, read_only=True)
@@ -48,7 +49,6 @@ class VerifyEmailSerializer(serializers.ModelSerializer):
     refresh_token = serializers.CharField(max_length=255, read_only=True)
 
     class Meta:
-        model = OTP
         fields = ['code', 'email', 'full_name', 'access_token', 'refresh_token']
 
     def validate(self, attrs):
@@ -120,6 +120,9 @@ class ResetPasswordSerializer(serializers.Serializer):
             raise serializers.ValidationError({'email': 'Không tìm thấy tài khoản phù hợp!'})
 
         user = User.objects.get(email=email)
+
+        if not user.is_verified:
+            raise AuthenticationFailed({'email': 'Không tìm thấy tài khoản phù hợp!'})
 
         uidb64 = urlsafe_base64_encode(smart_bytes(user.id))
         token = PasswordResetTokenGenerator().make_token(user)
@@ -212,6 +215,6 @@ class SetNewPasswordSerializer(serializers.Serializer):
                 'access_token': str(tokens.get('access_token')),
                 'refresh_token': str(tokens.get('refresh_token'))
             }
-        
+
         except DjangoUnicodeDecodeError:
             raise AuthenticationFailed("Liên kết đặt lại mật khẩu không hợp lệ hoặc đã hết hạn!", 401)
