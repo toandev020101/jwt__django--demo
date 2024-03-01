@@ -94,10 +94,10 @@ class LoginSerializer(serializers.ModelSerializer):
         user = authenticate(request, email=email, password=password)
 
         if not user:
-            raise AuthenticationFailed(
+            raise serializers.ValidationError(
                 {'email': 'Email hoặc mật khẩu không chính xác!', 'password': 'Email hoặc mật khẩu không chính xác!'})
         if not user.is_verified:
-            raise AuthenticationFailed({'email': 'Email chưa được xác minh!'})
+            raise serializers.ValidationError({'email': 'Email chưa được xác minh!'})
 
         tokens = user.tokens()
 

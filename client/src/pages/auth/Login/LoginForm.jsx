@@ -29,15 +29,15 @@ const LoginForm = () => {
     setIsLoading(true);
     try {
       let res = await AuthApi.login(values);
-      const user = res.result.data;
-      JWTManager.setToken(res.result.access_token);
+      const data = res.data;
+      JWTManager.setToken(data.access_token);
       setIsAuthenticated(true);
 
-      navigate(user.role.code === 'student' ? '/' : '/quan-tri', {
+      navigate('/', {
         state: {
           notify: {
             type: 'success',
-            message: 'Xin chào, ' + user.fullname,
+            message: 'Xin chào, ' + data.fullname,
             options: { theme: 'colored', toastId: 'headerId', autoClose: 1500 },
           },
         },
@@ -48,8 +48,9 @@ const LoginForm = () => {
       const { status, data } = error.response;
       if (status === 400 || status === 404) {
         if (status === 400) {
-          form.setError('email', { type: 'manual', message: data.detail });
-          form.setError('password', { type: 'manual', message: data.detail });
+          Object.keys(data).forEach(key => {
+            form.setError(key, { type: 'manual', message: data[key][0] });
+          });
         }
         toast.error('Đăng nhập thất bại!', { theme: 'colored', toastId: 'authId', autoClose: 1500 });
       } else {
