@@ -62,7 +62,7 @@ const Home = () => {
           },
         },
       });
-    }, 200);
+    }, 1000);
 
     if (isAuthenticated) {
       clearTimeout(timeId);
