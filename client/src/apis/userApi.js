@@ -1,6 +1,6 @@
 import axiosClient from './axiosClient';
 
-const BASE_LINK = '/user';
+const BASE_LINK = '/users';
 
 export const getPagination = ({ _limit, _page, searchTerm, roleCode, isVerified }) => {
   const url = `${BASE_LINK}?_page=${_page}&_limit=${_limit}&search_term=${searchTerm}&role_code=${roleCode}&is_verified=${isVerified}`;

@@ -2,11 +2,11 @@ import { Box, FormHelperText, Typography, useTheme } from '@mui/material';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import * as AuthApi from '../../apis/authApi';
-import OTPInputField from '../../components/OTPInputField';
-import { useAuthContext } from '../../contexts/authContext';
-import JWTManager, { REFRESH_TOKEN_COOKIE_NAME } from '../../utils/jwt';
-import { getLocalStorage, removeLocalStorage, setLocalStorage } from '../../utils/storage';
+import * as AuthApi from '../../../apis/authApi';
+import OTPInputField from '../../../components/OTPInputField';
+import { useAuthContext } from '../../../contexts/authContext';
+import JWTManager, { REFRESH_TOKEN_COOKIE_NAME } from '../../../utils/jwt';
+import { getLocalStorage, removeLocalStorage, setLocalStorage } from '../../../utils/storage';
 
 const VERIFY_EMAIL = 'verify_email';
 

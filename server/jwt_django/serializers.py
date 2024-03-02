@@ -245,10 +245,13 @@ class GetOneUserByIdSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField()
     full_name = serializers.CharField(read_only=True)
     email = serializers.EmailField(read_only=True)
+    first_name = serializers.CharField(read_only=True)
+    last_name = serializers.CharField(read_only=True)
 
     class Meta:
         model = User
-        fields = ['id', 'avatar', 'full_name', 'email', 'gender', 'phone_number', 'date_joined']
+        fields = ['id', 'avatar', 'full_name', 'email', 'gender', 'phone_number', 'date_joined', 'first_name',
+                  'last_name']
 
     def validate(self, attrs):
         id = attrs.get('id')
