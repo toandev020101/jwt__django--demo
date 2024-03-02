@@ -5,7 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import * as AuthApi from '../../apis/authApi';
 import OTPInputField from '../../components/OTPInputField';
 import { useAuthContext } from '../../contexts/authContext';
-import JWTManager from '../../utils/jwt';
+import JWTManager, { REFRESH_TOKEN_COOKIE_NAME } from '../../utils/jwt';
+import { getLocalStorage, removeLocalStorage, setLocalStorage } from '../../utils/storage';
 
 const VERIFY_EMAIL = 'verify_email';
 
@@ -19,7 +20,7 @@ const VerifyEmail = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!window.localStorage.getItem(VERIFY_EMAIL)) {
+    if (!getLocalStorage(VERIFY_EMAIL)) {
       navigate('/dang-ky',
         {
           state: {
@@ -40,6 +41,7 @@ const VerifyEmail = () => {
       const data = res.data;
       JWTManager.setToken(data.access_token);
       setIsAuthenticated(true);
+      setLocalStorage(REFRESH_TOKEN_COOKIE_NAME, data.refresh_token);
 
       navigate('/',
         {
@@ -51,7 +53,7 @@ const VerifyEmail = () => {
             },
           },
         });
-      window.localStorage.removeItem(VERIFY_EMAIL);
+      removeLocalStorage(VERIFY_EMAIL);
       setIsLoading(false);
     } catch (err) {
       const { status, data } = err.response;

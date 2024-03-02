@@ -1,9 +1,9 @@
 from django.conf import settings
 from django.template.loader import render_to_string
+from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework import status
 
 from .models import User, OTP
 from .serializers import RegisterSerializer, LoginSerializer, VerifyEmailSerializer, ResetPasswordSerializer, \
@@ -47,18 +47,7 @@ def register(request):
 def verify_email(request):
     serializer = VerifyEmailSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
-
-    data = serializer.data
-    response = Response({'data': data, 'message': 'Xác minh email thành công'}, status=status.HTTP_200_OK)
-    response.set_cookie(
-        key=settings.REFRESH_TOKEN_COOKIE_NAME,
-        value=data.get('refresh_token'),
-        httponly=True,
-        secure=True,
-        samesite="lax",
-        path=f"{settings.BASE_URL}/auth/refresh-token"
-    )
-    return response
+    return Response({'data': serializer.data, 'message': 'Xác minh email thành công'}, status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])
@@ -66,18 +55,7 @@ def verify_email(request):
 def login(request):
     serializer = LoginSerializer(data=request.data, context={'request': request})
     serializer.is_valid(raise_exception=True)
-    data = serializer.data
-
-    response = Response({'data': serializer.data, 'message': 'Đăng nhập thành công'}, status=status.HTTP_200_OK)
-    response.set_cookie(
-        key=settings.REFRESH_TOKEN_COOKIE_NAME,
-        value=data.get('refresh_token'),
-        httponly=True,
-        secure=True,
-        samesite="lax",
-        path=f"{settings.BASE_API_URL}/auth/refresh-token"
-    )
-    return response
+    return Response({'data': serializer.data, 'message': 'Đăng nhập thành công'}, status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])
@@ -104,18 +82,7 @@ def reset_password_confirm(request, uidb64, token):
 def set_new_password(request):
     serializer = SetNewPasswordSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
-    data = serializer.data
-
-    response = Response({'data': serializer.data, 'message': 'Đặt lại mật khẩu thành công'}, status=status.HTTP_200_OK)
-    response.set_cookie(
-        key=settings.REFRESH_TOKEN_COOKIE_NAME,
-        value=data.get('refresh_token'),
-        httponly=True,
-        secure=True,
-        samesite="lax",
-        path=f"{settings.BASE_API_URL}/auth/refresh-token"
-    )
-    return response
+    return Response({'data': serializer.data, 'message': 'Đặt lại mật khẩu thành công'}, status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])

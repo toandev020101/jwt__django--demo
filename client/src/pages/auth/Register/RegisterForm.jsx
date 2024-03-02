@@ -7,8 +7,8 @@ import InputField from '../../../components/InputField';
 import { useNavigate } from 'react-router-dom';
 import * as AuthApi from '../../../apis/authApi';
 import { toast } from 'react-toastify';
-import { useAuthContext } from '../../../contexts/authContext';
 import registerSchema from '../../../schemas/registerSchema';
+import { setLocalStorage } from '../../../utils/storage';
 
 const VERIFY_EMAIL = 'verify_email';
 
@@ -31,7 +31,7 @@ const RegisterForm = () => {
     setIsLoading(true);
     try {
       await AuthApi.register(values);
-      window.localStorage.setItem(VERIFY_EMAIL, 'true');
+      setLocalStorage(VERIFY_EMAIL, 'true');
       navigate('/xac-minh-email',
         {
           state: {

@@ -16,7 +16,6 @@ export const useAuthContext = () => useContext(AuthContext);
 
 const AuthContextProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(defaultIsAuthenticated);
-  const [isRegister, setIsRegister] = useState(defaultIsAuthenticated);
 
   const checkAuth = useCallback(async () => {
     const token = JWTManager.getToken();
