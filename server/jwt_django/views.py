@@ -92,7 +92,7 @@ def logout(request):
     serializer = LogoutSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     serializer.save()
-    return Response({'data': None, 'message': 'Đăng xuất thành công'}, status=status.HTTP_204_NO_CONTENT)
+    return Response({'data': None, 'message': 'Đăng xuất thành công'}, status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])

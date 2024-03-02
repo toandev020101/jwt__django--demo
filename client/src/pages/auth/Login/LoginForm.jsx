@@ -39,7 +39,7 @@ const LoginForm = () => {
         state: {
           notify: {
             type: 'success',
-            message: 'Xin chào, ' + data.fullname,
+            message: 'Xin chào, ' + data.full_name,
             options: { theme: 'colored', toastId: 'headerId', autoClose: 1500 },
           },
         },

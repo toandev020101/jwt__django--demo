@@ -6,9 +6,8 @@ import ClientLayout from './layouts/ClientLayout';
 import ForgotPassword from './pages/auth/ForgotPassword';
 import Dashboard from './pages/admin/Dashboard';
 import AdminLayout from './layouts/AdminLayout';
-import RoleManager from './pages/admin/UserManager/RoleManager';
 import AccountManager from './pages/admin/UserManager/AccountManager';
-import VerifyEmail from './pages/VerifyEmail';
+import VerifyEmail from './pages/auth/VerifyEmail';
 
 export const publicRoutes = [
   // auth
@@ -23,7 +22,6 @@ export const publicRoutes = [
 
 export const privateRoutes = [
   // admin
-  { path: '/quan-tri/tai-khoan/vai-tro', component: RoleManager, layout: AdminLayout },
   { path: '/quan-tri/tai-khoan', component: AccountManager, layout: AdminLayout },
   { path: '/quan-tri', component: Dashboard, layout: AdminLayout },
 ];

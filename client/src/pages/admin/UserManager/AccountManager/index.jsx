@@ -5,7 +5,7 @@ import TitlePage from '../../../../components/TitlePage';
 import { toast } from 'react-toastify';
 import RemoveDialog from '../../../../components/RemoveDialog';
 import { useAuthContext } from '../../../../contexts/authContext';
-import * as RoleApi from '../../../../apis/roleApi';
+// import * as RoleApi from '../../../../apis/roleApi';
 import * as UserApi from '../../../../apis/userApi';
 import DetailOrAddOrEditDialog from './DetailOrAddOrEditDialog';
 import TableContent from './TableContent';
@@ -90,28 +90,28 @@ const AccountManager = () => {
     },
   ];
 
-  useEffect(() => {
-    const getAllRole = async () => {
-      setIsLoading(true);
-      try {
-        const res = await RoleApi.getAll();
-        const newRoles = res.result.data;
-        setRoles(newRoles);
-      } catch (error) {
-        const { status, data } = error.response;
-        if (status === 400 || status === 404) {
-          toast.error(data.detail, { theme: 'colored', toastId: 'headerId', autoClose: 1500 });
-        } else {
-          navigate(`/error/${status}`);
-        }
-      }
-      setIsLoading(false);
-    };
-
-    if (isAuthenticated) {
-      getAllRole();
-    }
-  }, []);
+  // useEffect(() => {
+  //   const getAllRole = async () => {
+  //     setIsLoading(true);
+  //     try {
+  //       const res = await RoleApi.getAll();
+  //       const newRoles = res.result.data;
+  //       setRoles(newRoles);
+  //     } catch (error) {
+  //       const { status, data } = error.response;
+  //       if (status === 400 || status === 404) {
+  //         toast.error(data.detail, { theme: 'colored', toastId: 'headerId', autoClose: 1500 });
+  //       } else {
+  //         navigate(`/error/${status}`);
+  //       }
+  //     }
+  //     setIsLoading(false);
+  //   };
+  //
+  //   if (isAuthenticated) {
+  //     getAllRole();
+  //   }
+  // }, []);
 
   useEffect(() => {
     // bỏ chọn nếu lấy lại danh sách rows
@@ -187,9 +187,9 @@ const AccountManager = () => {
     try {
       let res;
       if (openHandleDialog === 'edit') {
-        res = await RoleApi.updateOne(rows[handleIndex].id, values);
+        res = await UserApi.updateOne(rows[handleIndex].id, values);
       } else {
-        res = await RoleApi.addOne(values);
+        res = await UserApi.addOne(values);
       }
 
       toast.success(res.detail, {
