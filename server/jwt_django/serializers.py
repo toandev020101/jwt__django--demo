@@ -239,3 +239,24 @@ class LogoutSerializer(serializers.Serializer):
             token.blacklist()
         except TokenError:
             return self.fail('bad_token')
+
+
+class GetOneUserByIdSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField()
+    full_name = serializers.CharField(read_only=True)
+    email = serializers.EmailField(read_only=True)
+
+    class Meta:
+        model = User
+        fields = ['id', 'avatar', 'full_name', 'email', 'gender', 'phone_number', 'date_joined']
+
+    def validate(self, attrs):
+        id = attrs.get('id')
+        user_exists = User.objects.filter(id=id).exists()
+        if not user_exists:
+            raise serializers.ValidationError('Không tìm thấy tài khoản!')
+
+        user = User.objects.get(id=id)
+        user.full_name = user.get_full_name
+
+        return user
