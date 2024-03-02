@@ -5,6 +5,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from .managers import UserManager
 
+
 # Create your models here.
 
 
@@ -15,7 +16,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     gender = models.CharField(max_length=5, null=True, verbose_name=_("Gender"))
     phone_number = models.CharField(max_length=11, null=True, verbose_name=_("Phone Number"))
-    avatar = models.ImageField(upload_to='uploads/%Y/%m', null=True, verbose_name=_("Avatar"))
+    avatar = models.ImageField(upload_to='uploads/%Y/%m/', null=True, blank=True, verbose_name=_("Avatar"))
 
     is_verified = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
