@@ -8,7 +8,8 @@ from rest_framework.response import Response
 
 from .models import User, OTP
 from .serializers import RegisterSerializer, LoginSerializer, VerifyEmailSerializer, ResetPasswordSerializer, \
-    ResetPasswordConfirmSerializer, SetNewPasswordSerializer, LogoutSerializer, GetOneUserByIdSerializer
+    ResetPasswordConfirmSerializer, SetNewPasswordSerializer, LogoutSerializer, GetOneUserByIdSerializer, \
+    UpdateOneUserSerializer
 from .utils import send_mail, generate_otp
 
 
@@ -104,4 +105,16 @@ def get_one_user_by_id(request, id):
     serializer = GetOneUserByIdSerializer(data=data)
     serializer.is_valid(raise_exception=True)
     return Response({'data': serializer.data, 'message': 'Lấy thông tin tài khoản thành công'},
+                    status=status.HTTP_200_OK)
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def update_one_user(request, id):
+    data = request.data
+    data['id'] = id
+    serializer = UpdateOneUserSerializer(data=data)
+    serializer.is_valid(raise_exception=True)
+    serializer.save(data=serializer.data)
+    return Response({'data': None, 'message': 'Cập nhật thông tin tài khoản thành công'},
                     status=status.HTTP_200_OK)

@@ -263,3 +263,28 @@ class GetOneUserByIdSerializer(serializers.ModelSerializer):
         user.full_name = user.get_full_name
 
         return user
+
+
+class UpdateOneUserSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField()
+    email = serializers.EmailField(read_only=True)
+    first_name = serializers.CharField()
+    last_name = serializers.CharField()
+
+    class Meta:
+        model = User
+        fields = ['id', 'avatar', 'last_name', 'first_name', 'email', 'gender', 'phone_number']
+
+    def validate(self, attrs):
+        id = attrs.get('id')
+        user_exists = User.objects.filter(id=id).exists()
+        if not user_exists:
+            raise serializers.ValidationError('Không tìm thấy tài khoản!')
+
+        return attrs
+
+    def save(self, **kwargs):
+        data = kwargs.get('data')
+        id = data.get('id')
+        del data['id']
+        User.objects.filter(id=id).update(**data)
