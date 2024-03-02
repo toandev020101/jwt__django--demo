@@ -38,6 +38,7 @@ const Home = () => {
   const [avatar, setAvatar] = useState(null);
   const [file, setFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [reload, setReload] = useState(false);
 
   const form = useForm({
     defaultValues: {
@@ -98,39 +99,59 @@ const Home = () => {
     if (isAuthenticated) {
       getUser();
     }
-  }, [navigate, isAuthenticated]);
+  }, [navigate, isAuthenticated, reload]);
+
+  const handleUploadFile = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFile(file);
+      handleChangeAvatar(file);
+    }
+  };
+
+  const handleChangeAvatar = (file) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setAvatar(reader.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleCancelChangeAvatar = () => {
+    setAvatar(user.avatar);
+    setFile(null);
+  };
 
   const handleSubmit = async (values) => {
-    //   setIsLoading(true);
-    //   try {
-    //     await AuthApi.register(values);
-    //     setLocalStorage(VERIFY_EMAIL, 'true');
-    //     navigate('/xac-minh-email',
-    //       {
-    //         state: {
-    //           notify: {
-    //             type: 'success',
-    //             message: 'Cảm ơn bạn đã đăng ký, Vui lòng xác minh email',
-    //             options: { theme: 'colored', toastId: 'headerId', autoClose: 1500 },
-    //           },
-    //         },
-    //       });
-    //     form.reset();
-    //     setIsLoading(false);
-    //   } catch (error) {
-    //     const { status, data } = error.response;
-    //     if (status === 400 || status === 404) {
-    //       if (status === 400) {
-    //         Object.keys(data).forEach(key => {
-    //           form.setError(key, { type: 'manual', message: data[key][0] });
-    //         });
-    //       }
-    //       toast.error('Đăng ký thất bại!', { theme: 'colored', toastId: 'authId', autoClose: 1500 });
-    //     } else {
-    //       navigate(`/error/${status}`);
-    //     }
-    //     setIsLoading(false);
-    //   }
+    setIsLoading(true);
+    const formData = new FormData();
+    if (file) {
+      formData.append('avatar', file);
+    }
+    for (let key in values) {
+      formData.append(key, values[key]);
+    }
+
+    try {
+      const res = await UserApi.updateOne({ id: JWTManager.getUserId(), formData });
+      toast.success(res.message, {
+        theme: 'colored',
+        toastId: 'headerId',
+        autoClose: 1500,
+      });
+
+      setAvatar(null);
+      setFile(null);
+      setReload(!reload);
+    } catch (error) {
+      const { status, message } = error.response;
+      if (status === 400 || status === 404) {
+        toast.error(message, { theme: 'colored', toastId: 'headerId', autoClose: 1500 });
+      } else {
+        navigate(`/error/${status}`);
+      }
+    }
+    setIsLoading(false);
   };
 
   const handleLogout = async () => {
@@ -177,18 +198,22 @@ const Home = () => {
         role={undefined}
         variant="contained"
         tabIndex={-1}
-        startIcon={<BiCloud />}
-        sx={{ textTransform: 'inherit', margin: '20px 0' }}
+        startIcon={<BiCloud style={{ fontSize: '25px', marginTop: '-5px' }} />}
+        sx={{ textTransform: 'inherit', margin: file ? '20px 0 10px' : '20px 0' }}
       >
         Chọn ảnh đại diện
-        <VisuallyHiddenInput type="file" accept="image/png, image/gif, image/jpeg" />
+        <VisuallyHiddenInput onChange={handleUploadFile} type="file"
+                             accept="image/png, image/gif, image/jpeg" />
       </Button>
+      {file && <Button variant={'contained'} color={'error'}
+                       sx={{ marginBottom: '20px', textTransform: 'inherit' }}
+                       onClick={handleCancelChangeAvatar}>Hủy</Button>}
       <Box display={'flex'} justifyContent={'space-between'} gap={'10px'}>
         <InputField name="last_name" label="Họ" form={form} type="text" required />
         <InputField name="first_name" label="Tên" form={form} type="text" required />
       </Box>
       <InputField name="email" label="Email" form={form} type="email" required disabled />
-      <RadioGroupField name="gender" label="Giới tính" form={form} required
+      <RadioGroupField name="gender" label="Giới tính" form={form}
                        options={[{ label: 'Nam', value: 'Nam' }, { label: 'Nữ', value: 'Nữ' }]}
                        type="horizontal" />
       <InputField name="phone_number" label="Số điện thoại" form={form} type="text" />

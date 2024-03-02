@@ -17,8 +17,8 @@ export const addOne = (data) => {
   return axiosClient.post(url, data);
 };
 
-export const updateOne = (formData) => {
-  const url = `${BASE_LINK}`;
+export const updateOne = ({ id, formData }) => {
+  const url = `${BASE_LINK}/set-one/${id}`;
   return axiosClient.put(url, formData, {
     headers: {
       'Content-Type': 'multipart/form-data',

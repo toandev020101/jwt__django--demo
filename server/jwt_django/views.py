@@ -1,8 +1,8 @@
 from django.conf import settings
 from django.template.loader import render_to_string
 from rest_framework import status
-from rest_framework.authentication import TokenAuthentication, SessionAuthentication
-from rest_framework.decorators import api_view, permission_classes, authentication_classes
+from rest_framework.decorators import api_view, permission_classes, authentication_classes, parser_classes
+from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
@@ -102,7 +102,7 @@ def get_one_user_by_id(request, id):
     data = {
         'id': id
     }
-    serializer = GetOneUserByIdSerializer(data=data)
+    serializer = GetOneUserByIdSerializer(data=data, context={'request': request})
     serializer.is_valid(raise_exception=True)
     return Response({'data': serializer.data, 'message': 'Lấy thông tin tài khoản thành công'},
                     status=status.HTTP_200_OK)
@@ -110,11 +110,17 @@ def get_one_user_by_id(request, id):
 
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
+@parser_classes([MultiPartParser])
 def update_one_user(request, id):
-    data = request.data
-    data['id'] = id
-    serializer = UpdateOneUserSerializer(data=data)
-    serializer.is_valid(raise_exception=True)
-    serializer.save(data=serializer.data)
-    return Response({'data': None, 'message': 'Cập nhật thông tin tài khoản thành công'},
-                    status=status.HTTP_200_OK)
+    serializer = UpdateOneUserSerializer(data=request.data)
+    try:
+        if serializer.is_valid(raise_exception=True):
+            User.objects.filter(id=id, is_active=True).update(**serializer.data)
+            user = User.objects.filter(id=id, is_active=True).get()
+            user.avatar = request.FILES['avatar']
+            user.save()
+            return Response({'data': None, 'message': 'Cập nhật thông tin tài khoản thành công'},
+                            status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    except User.DoesNotExist:
+        return Response("Không tìm thấy tài khoản!", status=status.HTTP_404_NOT_FOUND)
