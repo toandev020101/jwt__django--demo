@@ -1,9 +1,11 @@
 import { jwtDecode } from 'jwt-decode';
 import * as AuthApi from '../apis/authApi';
+import { setLocalStorage, getCookie, getLocalStorage } from './storage';
+
+export const REFRESH_TOKEN_COOKIE_NAME = 'jwt_django_cookie';
 
 const JWTManager = () => {
   const LOGOUT_EVENT_NAME = 'jwt_django_logout';
-  const REFRESH_TOKEN_COOKIE_NAME = 'jwt_django_cookie';
   let inMemoryToken = null;
   let refreshTokenTimeoutId = null;
   let userId = null;
@@ -31,7 +33,7 @@ const JWTManager = () => {
   const deleteToken = () => {
     inMemoryToken = null;
     abortRefreshToken();
-    window.localStorage.setItem(LOGOUT_EVENT_NAME, Date.now().toString());
+    setLocalStorage(LOGOUT_EVENT_NAME, Date.now().toString());
     return true;
   };
 
@@ -45,9 +47,10 @@ const JWTManager = () => {
   const getRefreshToken = async () => {
     try {
       // call api refresh token
-      const refresh_token = window.getCookie(REFRESH_TOKEN_COOKIE_NAME);
-      const res = await AuthApi.refreshToken(refresh_token);
-      setToken(res.data.access);
+      const refresh = getLocalStorage(REFRESH_TOKEN_COOKIE_NAME);
+      const res = await AuthApi.refreshToken({ refresh });
+      setToken(res.access);
+      setLocalStorage(REFRESH_TOKEN_COOKIE_NAME, res.refresh);
       return true;
     } catch (error) {
       deleteToken();

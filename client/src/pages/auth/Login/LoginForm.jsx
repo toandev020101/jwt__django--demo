@@ -6,10 +6,11 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import InputField from '../../../components/InputField';
 import { Link, useNavigate } from 'react-router-dom';
 import * as AuthApi from '../../../apis/authApi';
-import JWTManager from '../../../utils/jwt';
+import JWTManager, { REFRESH_TOKEN_COOKIE_NAME } from '../../../utils/jwt';
 import { toast } from 'react-toastify';
 import { useAuthContext } from '../../../contexts/authContext';
 import loginSchema from '../../../schemas/loginSchema';
+import { setLocalStorage } from '../../../utils/storage';
 
 const LoginForm = () => {
   const theme = useTheme();
@@ -32,6 +33,7 @@ const LoginForm = () => {
       const data = res.data;
       JWTManager.setToken(data.access_token);
       setIsAuthenticated(true);
+      setLocalStorage(REFRESH_TOKEN_COOKIE_NAME, data.refresh_token);
 
       navigate('/', {
         state: {
