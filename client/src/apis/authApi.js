@@ -42,7 +42,7 @@ export const forgotPassword = (data) => {
   return axiosClient.post(url, data);
 };
 
-export const logout = () => {
+export const logout = (data) => {
   const url = `${BASE_LINK}/logout`;
-  return axiosClient.get(url);
+  return axiosClient.post(url, data);
 };

@@ -1,6 +1,6 @@
 import { jwtDecode } from 'jwt-decode';
 import * as AuthApi from '../apis/authApi';
-import { setLocalStorage, getCookie, getLocalStorage } from './storage';
+import { getLocalStorage, setLocalStorage } from './storage';
 
 export const REFRESH_TOKEN_COOKIE_NAME = 'jwt_django_cookie';
 
