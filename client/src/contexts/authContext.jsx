@@ -1,5 +1,6 @@
 import React, { createContext, useCallback, useContext, useState } from 'react';
-import JWTManager from '../utils/jwt';
+import JWTManager, { REFRESH_TOKEN_COOKIE_NAME } from '../utils/jwt';
+import { removeLocalStorage } from '../utils/storage';
 
 const defaultIsAuthenticated = false;
 
@@ -30,6 +31,7 @@ const AuthContextProvider = ({ children }) => {
   const logoutClient = () => {
     JWTManager.deleteToken();
     setIsAuthenticated(false);
+    removeLocalStorage(REFRESH_TOKEN_COOKIE_NAME);
   };
 
   const authContextData = {
