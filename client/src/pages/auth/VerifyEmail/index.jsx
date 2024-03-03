@@ -7,6 +7,7 @@ import OTPInputField from '../../../components/OTPInputField';
 import { useAuthContext } from '../../../contexts/authContext';
 import JWTManager, { REFRESH_TOKEN_COOKIE_NAME } from '../../../utils/jwt';
 import { getLocalStorage, removeLocalStorage, setLocalStorage } from '../../../utils/storage';
+import TitlePage from '../../../components/TitlePage';
 
 const VERIFY_EMAIL = 'verify_email';
 
@@ -69,40 +70,43 @@ const VerifyEmail = () => {
     }
   };
 
-  return <Box width={'500px'} display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'}
-              gap={'30px'} padding={'50px 40px'} bgcolor={theme.palette.common.white} zIndex={99} borderRadius={'5px'}>
-    <Box width={'150px'} height={'150px'} bgcolor={theme.palette.grey[200]} display={'flex'} justifyContent={'center'}
-         alignItems={'center'} borderRadius={'50%'}>
-      <img src={'/images/email_send.png'} alt={'email send'} width={'100px'} />
+  return <Box zIndex={99}>
+    <TitlePage title={'JWT Django - Xác minh email'} />
+    <Box width={'500px'} display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'}
+         gap={'30px'} padding={'50px 40px'} bgcolor={theme.palette.common.white} borderRadius={'5px'}>
+      <Box width={'150px'} height={'150px'} bgcolor={theme.palette.grey[200]} display={'flex'} justifyContent={'center'}
+           alignItems={'center'} borderRadius={'50%'}>
+        <img src={'/images/email_send.png'} alt={'email send'} width={'100px'} />
+      </Box>
+
+      <Box textAlign={'center'}>
+        <Typography variant={'h5'}>Xác minh email</Typography>
+        <Typography variant={'option'}>Nhập mã gồm 6 số nhận được từ email của bạn vào ô bên dưới.</Typography>
+      </Box>
+
+      <Typography variant={'option'} sx={{ marginRight: '10px', color: theme.palette.common.black }}>Mã xác
+        minh</Typography>
+
+      <Box>
+        <OTPInputField separator={<span>-</span>} value={code} onChange={setCode} length={6} />
+        {error ? <FormHelperText error={true}>{error}</FormHelperText> : null}
+      </Box>
+
+      <LoadingButton
+        loading={isLoading}
+        loadingIndicator={'Loading...'}
+        variant="contained"
+        type="submit"
+        sx={{
+          textTransform: 'inherit',
+          width: '300px',
+        }}
+        disabled={isLoading}
+        onClick={handleSendOTP}
+      >
+        Xác minh email
+      </LoadingButton>
     </Box>
-
-    <Box textAlign={'center'}>
-      <Typography variant={'h5'}>Xác minh email</Typography>
-      <Typography variant={'option'}>Nhập mã gồm 6 số nhận được từ email của bạn vào ô bên dưới.</Typography>
-    </Box>
-
-    <Typography variant={'option'} sx={{ marginRight: '10px', color: theme.palette.common.black }}>Mã xác
-      minh</Typography>
-
-    <Box>
-      <OTPInputField separator={<span>-</span>} value={code} onChange={setCode} length={6} />
-      {error ? <FormHelperText error={true}>{error}</FormHelperText> : null}
-    </Box>
-
-    <LoadingButton
-      loading={isLoading}
-      loadingIndicator={'Loading...'}
-      variant="contained"
-      type="submit"
-      sx={{
-        textTransform: 'inherit',
-        width: '300px',
-      }}
-      disabled={isLoading}
-      onClick={handleSendOTP}
-    >
-      Xác minh email
-    </LoadingButton>
   </Box>;
 };
 

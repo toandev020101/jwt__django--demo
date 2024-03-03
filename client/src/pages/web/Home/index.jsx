@@ -70,7 +70,7 @@ const Home = () => {
     }
 
     return () => clearTimeout(timeId);
-  }, [isAuthenticated]);
+  }, [navigate, isAuthenticated]);
 
   useEffect(() => {
     const getUser = async () => {
@@ -99,6 +99,7 @@ const Home = () => {
     if (isAuthenticated) {
       getUser();
     }
+    // eslint-disable-next-line
   }, [navigate, isAuthenticated, reload]);
 
   const handleUploadFile = (e) => {

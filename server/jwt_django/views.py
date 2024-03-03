@@ -61,14 +61,16 @@ def login(request):
 
 
 @api_view(['POST'])
+@authentication_classes([])
 def reset_password(request):
-    serializer = ResetPasswordSerializer(data=request.data, context={'request': request})
+    serializer = ResetPasswordSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     return Response({'data': None, 'message': 'Một liên kết đã gửi đến email của bạn'},
                     status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])
+@authentication_classes([])
 def reset_password_confirm(request, uidb64, token):
     data = {
         'uidb64': uidb64,
@@ -81,6 +83,7 @@ def reset_password_confirm(request, uidb64, token):
 
 
 @api_view(['PATCH'])
+@authentication_classes([])
 def set_new_password(request):
     serializer = SetNewPasswordSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)

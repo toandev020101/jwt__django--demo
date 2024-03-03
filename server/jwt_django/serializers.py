@@ -1,7 +1,6 @@
 from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
-from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.encoding import smart_bytes, force_str, DjangoUnicodeDecodeError
@@ -129,10 +128,9 @@ class ResetPasswordSerializer(serializers.Serializer):
 
         uidb64 = urlsafe_base64_encode(smart_bytes(user.id))
         token = PasswordResetTokenGenerator().make_token(user)
-        request = self.context.get('request')
-        site_domain = get_current_site(request).domain
-        relative_link = reverse(viewname="reset-password-confirm", kwargs={'uidb64': uidb64, 'token': token})
-        abslink = f"http://{site_domain}{relative_link}"
+        client_url = settings.CLIENT_URL
+        relative_link = f"reset-password-confirm/{uidb64}/{token}"
+        abslink = f"{client_url}/{relative_link}"
         email_body = render_to_string('mail_reset_password.html', {
             "fullname": user.get_full_name,
             "abslink": abslink
