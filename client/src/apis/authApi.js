@@ -38,8 +38,13 @@ export const verifyOTPPassword = (data) => {
 };
 
 export const forgotPassword = (data) => {
-  const url = `${BASE_LINK}/forgot-password`;
+  const url = `${BASE_LINK}/reset-password`;
   return axiosClient.post(url, data);
+};
+
+export const resetPassword = (data) => {
+  const url = `${BASE_LINK}/set-new-password`;
+  return axiosClient.patch(url, data);
 };
 
 export const logout = (data) => {

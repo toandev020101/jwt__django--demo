@@ -8,6 +8,7 @@ import Dashboard from './pages/admin/Dashboard';
 import AdminLayout from './layouts/AdminLayout';
 import AccountManager from './pages/admin/UserManager/AccountManager';
 import VerifyEmail from './pages/auth/VerifyEmail';
+import ResetPassword from './pages/auth/ResetPassword';
 
 export const publicRoutes = [
   // auth
@@ -15,6 +16,7 @@ export const publicRoutes = [
   { path: '/dang-ky', component: Register, layout: AuthLayout },
   { path: '/xac-minh-email', component: VerifyEmail, layout: AuthLayout },
   { path: '/quen-mat-khau', component: ForgotPassword, layout: AuthLayout },
+  { path: '/reset-password-confirm/:uidb64/:token', component: ResetPassword, layout: AuthLayout },
 
   // web
   { path: '/', component: Home, layout: ClientLayout },
